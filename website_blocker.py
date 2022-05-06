@@ -4,7 +4,7 @@ from datetime import datetime as dt
 hosts_temp = "hosts"
 hosts_path = "/private/etc/hosts"
 redirect = "127.0.0.1"
-website_list = ["www.toyota.ru", "toyota.ru"]
+website_list = ["www.facebook.com", "facebook.com", "www.toyota.ru", "toyota.ru"]
 
 while True:
     if dt(dt.now().year, dt.now().month, dt.now().day, 8) < dt.now() < dt(dt.now().year, dt.now().month, dt.now().day, 17):
