@@ -1,0 +1,79 @@
+Программа-блокировщик сайтов.
+
+Программа принимает сслыки на сайты, которые отвлекают от работы (напрмимер, YouTube, соцсети),
+а также рабочие часы.
+Соответственно, в эти часы, указанные веб-сайты становятся недоступны для браузинга.  
+Программа полезна в снижении стресса, так как сайты, отвлекающие от работы, вызывают стресс.
+
+Программа очень легкая и работает в фоновом режиме, не влияя на производительность устройства.
+
+Принцип действия: программа работает с файлом hosts, помещая в него адреса сайтов, которые надо заблокировать,
+следом за локальным IP адресом устройства. При попытке зайти на сайт, мы будем перенаправлены на IP адрес, указанный 
+в файле hosts. На экран будет выведена ошибка: This site can't be reached.
+Соответсвенно, все что делает Python скрипт это помещает адреса сайтов в файл hosts в часы, указанные как рабочие, 
+и удаляет эти записи из файла в остальные часы.
+
+Создание:
+
+1. Указываем путь до файла
+hosts_path = "/private/etc/hosts"
+
+А также 2 другие переменные:
+redirect = "127.0.0.1"  # IP адрес куда будет перенаправлен браузер
+website_list = ["www.facebook.com", "facebook.com", "www.toyota.ru", "toyota.ru"]  # список сайтов, которые мы хотим заблокировать
+
+
+2. Полный код программы с комментариями
+
+import time  # модуль нужен лишь для того, чтобы запускать скрипт раз в указанный временной интервал
+from datetime import datetime as dt  # модуль нужен для операций с датами, временем, получения разницы во времени, итд.
+
+hosts_temp = "hosts"  # временный hosts файл, на котором можно отработать скрипт
+hosts_path = "/private/etc/hosts"
+redirect = "127.0.0.1"
+website_list = ["www.facebook.com", "facebook.com", "www.toyota.ru", "toyota.ru"]
+
+while True:
+    if dt(dt.now().year, dt.now().month, dt.now().day, 8) < dt.now() < 
+        dt(dt.now().year, dt.now().month, dt.now().day, 16):    # строчка dt(dt.now().year, dt.now().month, dt.now().day, 16) означает текущие год/месяц/день/16 часов. Все что нам надо указать это время. В данном случае 16. По сути все данное выражение можно заменить на if (8 < dt.now().hour < 16):
+        print("Working hours...")  # если условие выше выполнено, выведим запись "Working hours..."
+        with open(hosts_path, 'r+') as file:  # метод r+ позволяет читать из файла и записывать в файл
+            content = file.read()
+            # print(content)
+            for website in website_list:
+                if website in content:
+                    pass  # если сайт уже записан в файле hosts, ничего не делать
+                else:
+                    file.write(redirect + " " + website + "\n")
+    else:
+        with open(hosts_path, 'r+') as file:  # открываем файл в режиме r+, используя контекстный менеджер with. Указатель (pointer) находится в начале файла.
+            content = file.readlines()  # прочитать все строки. Теперь указатель находится в конце файла.
+            file.seek(0)  # метод seek возвращает указатель в начало файла
+            for line in content:
+                if not any(website in line for website in website_list):
+                    file.write(line)  # напишем все строки, которые мы хотим сохранить. Указатель находится сразу после последней написанной строки.
+            file.truncate()  # удаляет все строки с текущей позиции до конца файла. Указатель находится в НОВОМ конце файла.
+        print("Fun hours...")  # если мы не во временном промежутке между 8 и 16 часами, будет выведена запись "Fun hours..." 
+    time.sleep(5)  # цикл выполняется каждые 5 секунд
+
+
+
+
+# метод read записывает содержимое файла в переменную в качестве единой строки
+# метод readlines записывает содержимое файла в переменную в качестве списка всех строк по отдельности
+
+#   if not any(website in line for website in website_list):
+        file.write(line)
+
+Допустим, 'localhost is used to configure the loopback interface' первая строка (line) в файле hosts.
+Если ни одной из данных строк "www.facebook.com", "facebook.com", "www.toyota.ru", "toyota.ru" нет в строке
+'localhost is used to configure the loopback interface', то мы запишем строку 
+'localhost is used to configure the loopback interface' в файл. И так с каждой строкой.
+
+
+Запуск программы на MacOS:
+Используется crontab сервис.
+# sudo nano /private/etc/hosts   # проверим если в файле hosts находятся сайты, которые надо заблокировать
+# sudo python3 /Users/victorvoronezhskiy/Desktop/python_course/python_mega_projects/webiste_blocker/website_blocker.py   # запуск скрипта
+# sudo crontab -e
+
