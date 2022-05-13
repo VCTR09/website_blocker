@@ -74,6 +74,6 @@ while True:
 Запуск программы на MacOS:
 Используется crontab сервис.
 # sudo nano /private/etc/hosts   # проверим если в файле hosts находятся сайты, которые надо заблокировать
-# sudo python3 /Users/victorvoronezhskiy/Desktop/python_course/python_mega_projects/webiste_blocker/website_blocker.py   # запуск скрипта
+# sudo python3 /Users/victorvoronezhskiy/Desktop/python_course/PythonMegaProjects/webiste_blocker/website_blocker.py   # запуск скрипта
 # sudo crontab -e
 
